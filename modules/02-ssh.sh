@@ -32,7 +32,7 @@ sed -i 's/^#\?MaxAuthTries.*/MaxAuthTries 3/' /etc/ssh/sshd_config
 
 # Validate SSH configuration before restarting
 if sshd -t; then
-  systemctl restart sshd
+  systemctl restart ssh
   log_success "SSH hardening completed"
 else
   log_error "SSH configuration validation failed"

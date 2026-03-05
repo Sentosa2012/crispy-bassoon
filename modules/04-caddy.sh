@@ -47,10 +47,7 @@ $WILDCARD_BASE, *.$WILDCARD_BASE {
     reverse_proxy @kuma http://localhost:3001
 
     # everything else proxies to the secondary backend
-    reverse_proxy $PROXY_URL {
-        header_uri -Host
-        header_uri +Host {host}
-    }
+    reverse_proxy $PROXY_URL
 }
 EOF
 
