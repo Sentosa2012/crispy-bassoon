@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  uptime-kuma:
+    image: louislam/uptime-kuma:latest
+    container_name: uptime-kuma
+    restart: always
+    networks:
+      - uptime-network
+    ports:
+      - "3001:3001"
+    volumes:
+      - uptime-kuma-data:/app/data
+    environment:
+      - TZ=UTC
+      # Uncomment below for SQLite URL
+      # - SQLITE_URL=sqlite:///app/data/kuma.db
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3001/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+volumes:
+  uptime-kuma-data:
+    driver: local
+
+networks:
+  uptime-network:
+    driver: bridge

@@ -1,0 +1,22 @@
+[DEFAULT]
+# Standard bantime in seconds (2592000 = 30 days)
+bantime = 2592000
+# Time window to count failures (600 seconds = 10 minutes)
+findtime = 600
+# Number of attempts before banning
+maxretry = 3
+# Email for notifications
+destemail = root@localhost
+sendername = Fail2Ban
+# Ban action (use iptables-multiport for best compatibility)
+banaction = iptables-multiport
+# Ignore whitelist
+ignoreip = 127.0.0.1/8 ::1
+
+[sshd]
+enabled = true
+filter = sshd
+logpath = /var/log/auth.log
+maxretry = 3
+bantime = 2592000
+findtime = 600

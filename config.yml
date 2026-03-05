@@ -1,0 +1,58 @@
+# Ubuntu 24.04 LTS Server Setup Configuration
+
+# System Update Settings
+updates:
+  enabled: true
+  auto_updates: true
+
+# SSH Configuration
+ssh:
+  enabled: true
+  disable_password_login: true
+  disable_root_login: true
+  port: 22
+
+# Fail2ban Configuration
+fail2ban:
+  enabled: true
+  max_retry: 3
+  bantime: 2592000  # 30 days in seconds (permanent ban)
+  findtime: 600     # 10 minutes
+  destemail: root@localhost
+  sendername: Fail2Ban
+
+# Caddy Configuration
+caddy:
+  enabled: true
+  reverse_proxy_url: http://localhost:3000  # Backend server URL
+  domains:
+    - example.com
+    - www.example.com
+  email: admin@example.com  # For Let's Encrypt certificate
+  geoblocking: true
+  blocked_countries: []  # ISO 3166-1 alpha-2 country codes (e.g., ["CN", "RU"])
+  allowed_countries: []  # If set, only these countries are allowed (whitelist mode)
+
+# Tailscale Configuration
+tailscale:
+  enabled: true
+  auth_key: ""  # Set your auth key here for automatic login
+  hostname: ""  # Custom hostname for the device
+
+# Docker Configuration
+docker:
+  enabled: true
+  install_compose: true
+
+# Uptime Kuma Configuration
+uptime_kuma:
+  enabled: true
+  port: 3001
+  base_url: http://localhost:3001
+
+# Security Settings
+security:
+  enable_firewall: true
+  allow_ssh: true
+  allow_http: true
+  allow_https: true
