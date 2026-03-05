@@ -25,7 +25,7 @@ systemctl start tailscaled
 # Login to Tailscale
 if [[ -n "$AUTH_KEY" ]]; then
   log_info "Authenticating with Tailscale..."
-  tailscale up --authkey="$AUTH_KEY" --hostname="${HOSTNAME:-$(hostname)}"
+  tailscale up --authkey="$AUTH_KEY"
 else
   log_info "No auth key provided. Run 'sudo tailscale up' to authenticate"
 fi
