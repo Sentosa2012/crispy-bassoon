@@ -7,6 +7,12 @@ source "${SCRIPT_DIR}/lib/functions.sh"
 
 log_info "Installing and configuring Caddy..."
 
+# skip if disabled in configuration
+if ! is_section_enabled "caddy" "$CONFIG_FILE"; then
+  log_info "Caddy is disabled in config.yml, skipping"
+  exit 0
+fi
+
 # Install Caddy from APT
 apt-get install -y debian-keyring debian-archive-keyring apt-transport-https curl
 
@@ -23,9 +29,10 @@ if [[ -f caddy_linux_amd64.tar.gz ]]; then
 fi
 
 # Create Caddy config from template
-PROXY_URL=$(grep "reverse_proxy_url:" "$CONFIG_FILE" | sed 's/.*: //' | tr -d '"' | tr -d "'")
-DOMAINS=$(grep "    - " "$CONFIG_FILE" | grep -A 10 "domains:" | sed 's/.*- //' | tr '\n' ' ')
-EMAIL=$(grep "email:" "$CONFIG_FILE" | sed 's/.*: //' | tr -d '"' | tr -d "'")
+PROXY_URL=$(get_yaml_value 'reverse_proxy_url' "$CONFIG_FILE")
+EMAIL=$(get_yaml_value 'email' "$CONFIG_FILE")
+WILDCARD_BASE=$(get_yaml_value 'wildcard_base' "$CONFIG_FILE")
+KUMA_DOMAIN=$(get_yaml_value 'kuma_domain' "$CONFIG_FILE")
 
 cat > /etc/caddy/Caddyfile << EOF
 # Caddy configuration for reverse proxy with auto-renewal
@@ -33,20 +40,19 @@ cat > /etc/caddy/Caddyfile << EOF
     email $EMAIL
 }
 
-# Main reverse proxy block
-EOF
+# primary site and wildcard for all subdomains
+$WILDCARD_BASE, *.$WILDCARD_BASE {
+    # send requests for the Kuma hostname to the local service
+    @kuma host $KUMA_DOMAIN
+    reverse_proxy @kuma http://localhost:3001
 
-for domain in $DOMAINS; do
-  cat >> /etc/caddy/Caddyfile << EOF
-
-$domain {
+    # everything else proxies to the secondary backend
     reverse_proxy $PROXY_URL {
         header_uri -Host
         header_uri +Host {host}
     }
 }
 EOF
-done
 
 # Enable and start Caddy
 systemctl enable caddy

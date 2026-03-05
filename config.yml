@@ -24,10 +24,12 @@ fail2ban:
 # Caddy Configuration
 caddy:
   enabled: true
+  # base domain for wildcard certificate (Caddy will request *.example.com)
+  wildcard_base: example.com
+  # subdomain used for local Uptime Kuma proxy
+  kuma_domain: kuma.example.com
+  # backend URL for all other hosts
   reverse_proxy_url: http://localhost:3000  # Backend server URL
-  domains:
-    - example.com
-    - www.example.com
   email: admin@example.com  # For Let's Encrypt certificate
   geoblocking: true
   blocked_countries: []  # ISO 3166-1 alpha-2 country codes (e.g., ["CN", "RU"])

@@ -39,7 +39,7 @@ nano config.yml
 
 **Key configuration sections:**
 
-- **Caddy**: Set your domain names, backend proxy URL, and email
+- **Caddy**: Specify the wildcard base domain (e.g. `example.com`), a dedicated subdomain for Uptime Kuma (e.g. `kuma.example.com`), the backend proxy URL for all other hosts, and a certificate email
 - **Tailscale**: Add your auth key for automatic connection (optional)
 - **Docker/Uptime Kuma**: Port settings and basic configuration
 
@@ -83,10 +83,11 @@ fail2ban:
 # Caddy reverse proxy
 caddy:
   enabled: true
-  reverse_proxy_url: http://localhost:3000  # Backend server
-  domains:
-    - example.com
-    - www.example.com
+  # base domain used for wildcard certificate (requests *.example.com)
+  wildcard_base: example.com
+  # subdomain to route to uptime Kuma
+  kuma_domain: kuma.example.com
+  reverse_proxy_url: http://localhost:3000  # Backend server for other hosts
   email: admin@example.com
   geoblocking: true
   blocked_countries: []     # ISO country codes

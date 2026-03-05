@@ -12,8 +12,16 @@
     }
 }
 
-# Example reverse proxy with geoblocking
-example.com, www.example.com {
+# Example reverse proxy with wildcard certificate, geoblocking, and Kuma routing
+
+# This block handles the base domain and all subdomains via a wildcard certificate.
+# Requests for the kuma subdomain are forwarded locally; everything else goes to the
+# secondary proxy.
+example.com, *.example.com {
+    # Kuma subdomain matcher (replace with actual domain)
+    @kuma host kuma.example.com
+    reverse_proxy @kuma http://localhost:3001
+
     # Security headers
     header X-Frame-Options "SAMEORIGIN"
     header X-Content-Type-Options "nosniff"
@@ -26,7 +34,7 @@ example.com, www.example.com {
     # }
     # respond @blocked_countries 403
 
-    # Reverse proxy
+    # Reverse proxy for all other hosts
     reverse_proxy localhost:3000 {
         header_uri -Host
         header_uri +Host {host}
